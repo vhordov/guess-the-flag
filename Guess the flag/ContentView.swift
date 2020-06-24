@@ -10,46 +10,51 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var showingAlert: Bool = false
-    @State private var name: String = "Vadym"
+    @State private var showingScore = false
+    @State private var scoreTitle = ""
+    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
+    @State private var correctAnswer = Int.random(in: 0...2)
     
     var body: some View {
-        ZStack() {
-            Color.green.edgesIgnoringSafeArea(.all)
-            VStack(spacing: 20) {
-                TextField("Name", text: $name)
-                HStack(spacing: 20) {
-                    Button("Show alert") {
-                        self.showingAlert = true
-                    }
-                    .alert(isPresented: $showingAlert) {
-                        Alert(title: Text("This is alert!"), message: Text("We are showing alert to \(name)!"))
-                    }
-                    Button(action: {
-                        print("Tapped!")
-                    }) {
-                        VStack(spacing: 10) {
-                            Text("Tap me!")
-                            Image(systemName: "heart")
-                                .renderingMode(.original)
-                        }
-                    }
-                    Button(action: {
-                        print("editing!")
-                    }) {
-                        Text("Edit")
-                        Image(systemName: "pencil")
-                    }
+        ZStack {
+            Color.blue.edgesIgnoringSafeArea(.all)
+            VStack(spacing: 30) {
+                VStack {
+                    Text("Tap the flag of")
+                        .foregroundColor(.white)
+                    Text(countries[correctAnswer])
+                        .foregroundColor(.white)
                 }
-                Spacer()
-                HStack(spacing: 20) {
-                    Text("First")
-                    Text("Second")
-                    Text("Third")
+                ForEach(0 ..< 3) { number in
+                    Button(action: {
+                        self.flagTapped(number)
+                    }) {
+                        Image(self.countries[number])
+                            .renderingMode(.original)
+                    }
                 }
                 Spacer()
             }
         }
+        .alert(isPresented: $showingScore) {
+            Alert(title: Text(scoreTitle), message: Text("Your score is ???"), dismissButton: .default(Text("Continue")) {
+                self.askQuestion()
+            })
+        }
+    }
+    
+    func flagTapped(_ number: Int) {
+        if number == correctAnswer {
+            scoreTitle = "Correct"
+        } else {
+            scoreTitle = "Wrong"
+        }
+        showingScore = true
+    }
+    
+    func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
     }
 }
 
